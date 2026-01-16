@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Private Chat</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    .logout {
+        background-color: #70b1ee;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 10px;
+        font-size: 9px;
+        float: right;
+    }
+</style>
+</head>
+<body>
+
+<div class="chat-header">
+  <span id="chat-name"></span>
+  <button onclick="logout()" class="logout">Logout</button>
+</div>
+
+  <div id="messages"></div>
+<div id="typing" class="typing"></div>
+
+  <div class="input-box">
+    <input id="msg" placeholder="Type a message...">
+    <button onclick="sendMessage()">➤</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+  <script type="module" src="chat.js"></script>
+</body>
+</html>
