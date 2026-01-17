@@ -94,7 +94,7 @@ document.getElementById("msg").addEventListener("input", () => {
 
 onSnapshot(typingRef, snap => {
   if (!snap.exists()) return;
-  const otherKey = username === "pratham" ? "adhya" : "pratham";
+  const otherKey = username === "pratham" ? "Adhya" : "pratham";
   document.getElementById("typing").textContent =
     snap.data()[otherKey] ? "typing…" : "";
 });
@@ -114,7 +114,7 @@ window.addEventListener("beforeunload", () => {
   }, { merge: true });
 });
 
-const otherKey = username === "pratham" ? "adhya" : "pratham";
+const otherKey = username === "pratham" ? "Adhya" : "pratham";
 const otherPresenceRef = doc(db, "presence", otherKey);
 
 onSnapshot(otherPresenceRef, snap => {
@@ -301,3 +301,4 @@ onSnapshot(q, snap => {
     box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
   }
 });
+
