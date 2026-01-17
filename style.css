@@ -185,3 +185,170 @@ body {
     font-size: 14px;
   }
 }
+.status-text {
+  font-size: 12px;
+  color: #888;
+}
+.status-online { color: #2ecc71; }
+/* ===== MESSAGE ANIMATION ===== */
+@keyframes msgFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg-row {
+  animation: msgFadeIn 0.18s ease-out;
+}
+.msg-row {
+  animation: msgFadeIn 0.18s ease-out;
+  will-change: transform, opacity;
+}
+.reactions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.reaction {
+  background: #f0f0f0;
+  padding: 3px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.reaction-picker {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+  display: flex;
+  gap: 10px;
+  font-size: 18px;
+}
+/* Disable text cursor & selection on messages */
+/* ===== Message bubbles ===== */
+.bubble {
+  cursor: pointer;          /* 👆 finger cursor */
+  user-select: none;        /* text select band */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+/* ===== Reactions (counts) ===== */
+.reactions,
+.reaction {
+  cursor: pointer;          /* 👆 finger cursor */
+  user-select: none;        /* text select band */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+/* ===== Reaction picker emojis ===== */
+.reaction-picker,
+.reaction-picker span {
+  cursor: pointer;          /* 👆 finger cursor */
+  user-select: none;        /* text select band */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+/* ===== Desktop hover animation for reactions ===== */
+/* .reaction,
+.reaction-picker span {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+} */
+.reaction,
+.reaction-picker span {
+  transition: transform 0.18s cubic-bezier(.22,.61,.36,1),
+              box-shadow 0.18s ease;
+}
+
+/* Desktop only hover effect */
+@media (hover: hover) and (pointer: fine) {
+  .reaction:hover,
+  .reaction-picker span:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+/* ===== Three dots ===== */
+.msg-top {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.msg-dots {
+  font-size: 16px;
+  padding: 4px 6px;
+  cursor: pointer;
+  opacity: 0;
+  user-select: none;
+}
+
+/* show dots on hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  .msg-row:hover .msg-dots {
+    opacity: 1;
+  }
+}
+
+/* always visible on mobile */
+@media (hover: none) {
+  .msg-dots {
+    opacity: 1;
+  }
+}
+
+/* ===== Message menu ===== */
+.msg-menu {
+  position: absolute;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+  z-index: 999;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+.msg-menu div {
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.msg-menu div:hover {
+  background: #f2f2f2;
+}
+.reply-box {
+  background: #f1f1f1;
+  padding: 6px 10px;
+  border-left: 4px solid #4caf50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.reply-box.hidden {
+  display: none;
+}
+
+.reply-preview {
+  background: rgba(0,0,0,0.05);
+  padding: 4px 6px;
+  border-left: 3px solid #4caf50;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
