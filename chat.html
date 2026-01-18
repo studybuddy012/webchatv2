@@ -1,9 +1,14 @@
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>Private Chat</title>
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
     .logout {
         background-color: #70b1ee;
@@ -15,6 +20,42 @@
         font-size: 9px;
         float: right;
     }
+    /* ================= EMOJI ================= */
+
+#emoji-button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 70px;   /* input ke upar */
+  left: 10px;
+  background: white;
+  padding: 6px 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+
+.emoji-picker span {
+  font-size: 22px;
+  padding: 4px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.emoji-picker span:hover {
+  transform: translateY(-4px);
+}
+
+.hidden {
+  display: none;
+}
+
 </style>
 </head>
 <body>
@@ -24,26 +65,93 @@
     <div id="chat-name"></div>
     <div id="user-status" class="status-text"></div>
   </div>
-  <button onclick="logout()">Logout</button>
+  <button onclick="logout()" class="logout-btn">Logout</button>
 </div>
 
-
-  <div id="messages"></div>
+<div id="messages"></div>
 <div id="typing" class="typing"></div>
 
-  <div class="input-box">
-    <input id="msg" placeholder="Type a message...">
-    <button onclick="sendMessage()">➤</button>
-    <div id="reply-box" class="reply-box hidden">
-  <span id="reply-text"></span>
-  <button onclick="clearReply()">✕</button>
-</div>
+<div class="input-box">
 
+  <!-- 🔥 EMOJI BUTTON (ADDED) -->
+  <button id="emoji-button" type="button">😊</button>
+
+  <input id="msg" placeholder="Type a message...">
+  <button onclick="sendMessage()">➤</button> 
+
+  <div id="reply-box" class="reply-box hidden">
+    <span id="reply-text"></span>
+    <button onclick="clearReply()">✕</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+</div>
 
-  <script type="module" src="chat.js"></script>
+<!-- 🔥 EMOJI PICKER (ADDED) -->
+<div id="emoji-picker" class="emoji-picker hidden">
+  <span>😊</span>
+  <span>😂</span>
+  <span>😍</span>
+  <span>🥰</span>
+  <span>😎</span>
+  <span>🤩</span>
+  <span>😁</span>
+  <span>😭</span>
+  <span>😡</span>
+  <span>🥳</span>
+  <span>🤯</span>
+  <span>🥶</span>
+  <span>🤗</span>
+  <span>❤️</span>
+  <span>💖</span>
+  <span>❣️</span>
+  <span>💌</span>
+  <span>💫</span>
+  <span>💤</span>
+  <span>💝</span>
+  <span>💟</span>
+  <!-- <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span> -->
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+<script type="module" src="chat.js"></script>
+<script>
+  /* ================= EMOJI PICKER ================= */
+
+const emojiBtn = document.getElementById("emoji-button");
+const emojiPicker = document.getElementById("emoji-picker");
+const msgInput = document.getElementById("msg");
+
+/* safety check */
+if (emojiBtn && emojiPicker && msgInput) {
+
+  // toggle picker
+  emojiBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    emojiPicker.classList.toggle("hidden");
+  });
+
+  // emoji click -> input me add
+  emojiPicker.querySelectorAll("span").forEach(span => {
+    span.addEventListener("click", () => {
+      msgInput.value += span.textContent;
+      emojiPicker.classList.add("hidden");
+      msgInput.focus();
+    });
+  });
+
+  // outside click -> close
+  document.addEventListener("click", () => {
+    emojiPicker.classList.add("hidden");
+  });
+
+}
+
+</script>
 </body>
 </html>
