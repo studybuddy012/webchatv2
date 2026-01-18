@@ -26,10 +26,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* ================= USER ================= */
-const username = localStorage.getItem("username");
+let username = localStorage.getItem("username");
 if (!username) location.href = "index.html";
 
-const otherUser = username === "pratham" ? "Adhya" : "Pratham";
+/* 🔒 EXACT usernames only */
+const otherKey = username === "pratham" ? "Adhya" : "pratham";
+const otherUser = otherKey;
+
+/* header name */
 document.getElementById("chat-name").textContent = otherUser;
 
 /* logout */
@@ -86,6 +90,7 @@ let typingTimeout;
 
 document.getElementById("msg").addEventListener("input", () => {
   setDoc(typingRef, { [username]: true }, { merge: true });
+
   clearTimeout(typingTimeout);
   typingTimeout = setTimeout(() => {
     setDoc(typingRef, { [username]: false }, { merge: true });
@@ -94,7 +99,6 @@ document.getElementById("msg").addEventListener("input", () => {
 
 onSnapshot(typingRef, snap => {
   if (!snap.exists()) return;
-  const otherKey = username === "pratham" ? "Adhya" : "pratham";
   document.getElementById("typing").textContent =
     snap.data()[otherKey] ? "typing…" : "";
 });
@@ -102,23 +106,33 @@ onSnapshot(typingRef, snap => {
 /* ================= ONLINE / LAST SEEN ================= */
 const presenceRef = doc(db, "presence", username);
 
-await setDoc(presenceRef, {
+/* online on load */
+setDoc(presenceRef, {
   online: true,
   lastSeen: Date.now()
 }, { merge: true });
 
-window.addEventListener("beforeunload", () => {
-  setDoc(presenceRef, {
-    online: false,
-    lastSeen: Date.now()
-  }, { merge: true });
+/* reliable online/offline */
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    setDoc(presenceRef, {
+      online: false,
+      lastSeen: Date.now()
+    }, { merge: true });
+  } else {
+    setDoc(presenceRef, {
+      online: true,
+      lastSeen: Date.now()
+    }, { merge: true });
+  }
 });
 
-const otherKey = username === "pratham" ? "Adhya" : "pratham";
+/* read other user presence */
 const otherPresenceRef = doc(db, "presence", otherKey);
 
 onSnapshot(otherPresenceRef, snap => {
   if (!snap.exists()) return;
+
   const data = snap.data();
   const el = document.getElementById("user-status");
 
@@ -160,19 +174,16 @@ window.openReactionPicker = (msgId) => {
 
   const picker = document.createElement("div");
   picker.className = "reaction-picker";
-  picker.innerHTML = `
-    <span>❤️</span>
-    <span>😂</span>
-    <span>😮</span>
-    <span>😢</span>
-    <span>👍</span>
-  `;
+  picker.innerHTML = "❤️ 😂 😮 😢 👍";
 
-  picker.querySelectorAll("span").forEach(e => {
-    e.onclick = () => {
-      toggleReaction(msgId, e.textContent);
+  picker.innerHTML.split(" ").forEach(emoji => {
+    const span = document.createElement("span");
+    span.textContent = emoji;
+    span.onclick = () => {
+      toggleReaction(msgId, emoji);
       picker.remove();
     };
+    picker.appendChild(span);
   });
 
   document.body.appendChild(picker);
@@ -184,7 +195,7 @@ function closeMsgMenus() {
   document.querySelectorAll(".msg-menu").forEach(m => m.remove());
 }
 
-window.copyMessage = (text) => {
+window.copyMessage = text => {
   navigator.clipboard.writeText(text);
   closeMsgMenus();
 };
@@ -262,7 +273,7 @@ onSnapshot(q, snap => {
     Object.keys(reactions).forEach(emoji => {
       reactionsHTML += `
         <span class="reaction"
-          onclick="toggleReaction('${d.id}', '${emoji}')">
+          onclick="toggleReaction('${d.id}','${emoji}')">
           ${emoji} ${reactions[emoji].length}
         </span>`;
     });
@@ -301,4 +312,26 @@ onSnapshot(q, snap => {
     box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
   }
 });
+const emojiBtn = document.getElementById("emoji-btn");
+const emojiPicker = document.getElementById("emoji-picker");
+const msgInput = document.getElementById("msg");
 
+/* toggle picker */
+emojiBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  emojiPicker.classList.toggle("hidden");
+});
+
+/* emoji insert */
+emojiPicker.querySelectorAll("span").forEach(span => {
+  span.addEventListener("click", () => {
+    msgInput.value += span.textContent;
+    emojiPicker.classList.add("hidden");
+    msgInput.focus();
+  });
+});
+
+/* close on outside click */
+document.addEventListener("click", () => {
+  emojiPicker.classList.add("hidden");
+});
