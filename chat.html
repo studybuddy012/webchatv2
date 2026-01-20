@@ -70,7 +70,11 @@
 
 <div id="messages"></div>
 <div id="typing" class="typing"></div>
-
+<!-- reply-box -->
+<div id="reply-box" class="reply-box hidden">
+  <span id="reply-text"></span>
+  <button onclick="clearReply()">✕</button>
+</div>
 <div class="input-box">
 
   <!-- 🔥 EMOJI BUTTON (ADDED) -->
@@ -79,41 +83,37 @@
   <input id="msg" placeholder="Type a message...">
   <button onclick="sendMessage()">➤</button> 
 
-  <div id="reply-box" class="reply-box hidden">
+  <!-- <div id="reply-box" class="reply-box hidden">
     <span id="reply-text"></span>
     <button onclick="clearReply()">✕</button>
-  </div>
+  </div> -->
 
 </div>
 
 <!-- 🔥 EMOJI PICKER (ADDED) -->
 <div id="emoji-picker" class="emoji-picker hidden">
-  <span>😊</span>
-  <span>😂</span>
-  <span>😍</span>
-  <span>🥰</span>
-  <span>😎</span>
-  <span>🤩</span>
-  <span>😁</span>
-  <span>😭</span>
-  <span>😡</span>
-  <span>🥳</span>
-  <span>🤯</span>
-  <span>🥶</span>
-  <span>🤗</span>
-  <span>❤️</span>
-  <span>💖</span>
-  <span>❣️</span>
-  <span>💌</span>
-  <span>💫</span>
-  <span>💤</span>
-  <span>💝</span>
-  <span>💟</span>
-  <!-- <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span> -->
+  <span>😀</span><span>😁</span><span>😂</span><span>🤣</span><span>😊</span>
+<span>😇</span><span>🙂</span><span>😉</span><span>😌</span><span>😍</span>
+<span>🥰</span><span>😘</span><span>😗</span><span>😙</span><span>😚</span>
+<span>😋</span><span>😜</span><span>🤪</span><span>😝</span><span>😎</span>
+<span>🤓</span><span>🧐</span><span>🤩</span><span>🥳</span><span>😏</span>
+<span>😒</span><span>😞</span><span>😔</span><span>😟</span><span>😕</span>
+<span>🙁</span><span>☹️</span><span>😣</span><span>😖</span><span>😫</span>
+<span>😩</span><span>🥺</span><span>😢</span><span>😭</span><span>😤</span>
+<span>😠</span><span>😡</span><span>🤬</span><span>🤯</span>
+<span>❤️</span><span>🧡</span><span>💛</span><span>💚</span><span>💙</span>
+<span>💜</span><span>🖤</span><span>🤍</span><span>🤎</span><span>💖</span>
+<span>💗</span><span>💓</span><span>💞</span><span>♥️</span><span>💕</span><span>💝</span>
+<span>❣️</span><span>💘</span><span>💌</span><span>🔥</span><span>✨</span>
+<span>💫</span><span>⭐</span><span>🌟</span><span>🙏</span><span>👍</span>
+<span>👎</span><span>👌</span><span>✌️</span><span>🤝</span><span>🙌</span>
+<span>🤗</span><span>🤭</span><span>🤫</span><span>🤔</span><span>🤥</span>
+<span>😶</span><span>😐</span><span>😑</span><span>😬</span><span>🙄</span>
+<span>😯</span><span>😦</span><span>😧</span><span>😮</span><span>😲</span>
+<span>🥱</span><span>😴</span><span>💤</span><span>🥶</span><span>🥵</span>
+<span>🤒</span><span>🤕</span><span>🤢</span><span>🤮</span><span>🤧</span>
+<span>😷</span><span>🤠</span><span>😇</span><span>🥳</span><span>🥸</span>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
