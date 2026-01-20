@@ -396,3 +396,33 @@ body {
   cursor: pointer;
   font-size: 14px;
 }
+/* ================= REPLY BAR ================= */
+
+.reply-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f1f1;
+  padding: 8px 12px;
+  border-left: 4px solid #70b1ee;
+  font-size: 13px;
+}
+
+.reply-box span {
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.reply-box button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
