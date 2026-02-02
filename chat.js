@@ -57,7 +57,30 @@ window.startReply = (sender, text) => {
   document.getElementById("reply-text").textContent = `${sender}: ${text}`;
   document.getElementById("reply-box").classList.remove("hidden");
 };
+import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+window.exportChat = async () => {
+  const snap = await getDocs(query(messagesRef, orderBy("time")));
+
+  let text = "PRIVATE CHAT EXPORT\n";
+  text += "=====================\n\n";
+
+  snap.forEach(doc => {
+    const m = doc.data();
+
+    const date = new Date(m.time).toLocaleString();
+    text += `[${date}] ${m.sender}: ${m.text}\n`;
+  });
+
+  const blob = new Blob([text], { type: "text/plain" });
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+  a.download = "chat_backup.txt";
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+};
 /* ================= SEND MESSAGE ================= */
 window.sendMessage = async () => {
   const input = document.getElementById("msg");
@@ -225,3 +248,4 @@ onSnapshot(q, snap => {
     box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
   }
 });
+
