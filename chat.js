@@ -1,281 +1,44 @@
-// import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-// import {
-//   getFirestore,
-//   collection,
-//   addDoc,
-//   query,
-//   orderBy,
-//   onSnapshot,
-//   doc,
-//   setDoc,
-//   updateDoc,
-//   getDoc,
-//   where
-// } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// /* ================= FIREBASE ================= */
-// const firebaseConfig = {
-//   apiKey: "AIzaSyDtmTgb_1K7bm5bf8NyLvx68Eh_CGM_jKE",
-//   authDomain: "webchat-1bfe4.firebaseapp.com",
-//   projectId: "webchat-1bfe4",
-//   storageBucket: "webchat-1bfe4.firebasestorage.app",
-//   messagingSenderId: "262087743590",
-//   appId: "1:262087743590:web:53934198aca60e81acf5a7"
-// };
-
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-
-// /* ================= USER ================= */
-// let username = localStorage.getItem("username");
-// if (!username) location.href = "index.html";
-
-// const otherKey = username === "pratham" ? "Adhya" : "pratham";
-// const otherUser = otherKey;
-
-// document.getElementById("chat-name").textContent = otherUser;
-
-// window.logout = () => {
-//   localStorage.removeItem("username");
-//   location.href = "index.html";
-// };
-
-// /* ================= REFS ================= */
-// const messagesRef = collection(db, "messages");
-// const typingRef = doc(db, "typing", "status");
-
-// /* ================= REPLY ================= */
-// let replyData = null;
-
-// window.clearReply = () => {
-//   replyData = null;
-//   document.getElementById("reply-box").classList.add("hidden");
-// };
-
-// window.startReply = (sender, text) => {
-//   replyData = { sender, text };
-//   document.getElementById("reply-text").textContent = `${sender}: ${text}`;
-//   document.getElementById("reply-box").classList.remove("hidden");
-// };
-// import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// window.exportChat = async () => {
-//   const snap = await getDocs(query(messagesRef, orderBy("time")));
-
-//   let text = "PRIVATE CHAT EXPORT\n";
-//   text += "=====================\n\n";
-
-//   snap.forEach(doc => {
-//     const m = doc.data();
-
-//     const date = new Date(m.time).toLocaleString();
-//     text += `[${date}] ${m.sender}: ${m.text}\n`;
-//   });
-
-//   const blob = new Blob([text], { type: "text/plain" });
-//   const a = document.createElement("a");
-
-//   a.href = URL.createObjectURL(blob);
-//   a.download = "chat_backup.txt";
-//   a.click();
-
-//   URL.revokeObjectURL(a.href);
-// };
-// /* ================= SEND MESSAGE ================= */
-// window.sendMessage = async () => {
-//   const input = document.getElementById("msg");
-//   const text = input.value.trim();
-//   if (!text) return;
-
-//   await addDoc(messagesRef, {
-//     sender: username,
-//     text,
-//     time: Date.now(),
-//     seen: false,
-//     reactions: {},
-//     replyTo: replyData
-//   });
-
-//   await setDoc(typingRef, { [username]: false }, { merge: true });
-//   clearReply();
-//   input.value = "";
-// };
-
-// document.getElementById("msg").addEventListener("keydown", e => {
-//   if (e.key === "Enter") sendMessage();
-// });
-
-// /* ================= TYPING ================= */
-// let typingTimeout;
-
-// document.getElementById("msg").addEventListener("input", () => {
-//   setDoc(typingRef, { [username]: true }, { merge: true });
-
-//   clearTimeout(typingTimeout);
-//   typingTimeout = setTimeout(() => {
-//     setDoc(typingRef, { [username]: false }, { merge: true });
-//   }, 800);
-// });
-
-// onSnapshot(typingRef, snap => {
-//   if (!snap.exists()) return;
-//   document.getElementById("typing").textContent =
-//     snap.data()[otherKey] ? "typing…" : "";
-// });
-
-// /* ================= PRESENCE ================= */
-// const presenceRef = doc(db, "presence", username);
-
-// setDoc(presenceRef, { online: true, lastSeen: Date.now() }, { merge: true });
-
-// document.addEventListener("visibilitychange", () => {
-//   setDoc(presenceRef, {
-//     online: document.visibilityState === "visible",
-//     lastSeen: Date.now()
-//   }, { merge: true });
-// });
-
-// const otherPresenceRef = doc(db, "presence", otherKey);
-
-// onSnapshot(otherPresenceRef, snap => {
-//   if (!snap.exists()) return;
-//   const data = snap.data();
-//   const el = document.getElementById("user-status");
-
-//   if (data.online) {
-//     el.textContent = "Online";
-//     el.className = "status-text status-online";
-//   } else {
-//     const t = new Date(data.lastSeen).toLocaleTimeString([], {
-//       hour: "2-digit",
-//       minute: "2-digit"
-//     });
-//     el.textContent = `Last seen ${t}`;
-//     el.className = "status-text";
-//   }
-// });
-
-// /* ================= REACTIONS ================= */
-// window.toggleReaction = async (msgId, emoji) => {
-//   const msgRef = doc(db, "messages", msgId);
-//   const snap = await getDoc(msgRef);
-//   if (!snap.exists()) return;
-
-//   const data = snap.data();
-//   const reactions = data.reactions || {};
-//   const users = reactions[emoji] || [];
-
-//   if (users.includes(username)) {
-//     reactions[emoji] = users.filter(u => u !== username);
-//     if (reactions[emoji].length === 0) delete reactions[emoji];
-//   } else {
-//     reactions[emoji] = [...users, username];
-//   }
-
-//   await updateDoc(msgRef, { reactions });
-// };
-
-// /* ================= SMART AUTO-SCROLL ================= */
-// function isAtBottom(el) {
-//   return el.scrollHeight - el.scrollTop - el.clientHeight < 60;
-// }
-
-// /* ================= MESSAGES (LAST 2 DAYS ONLY) ================= */
-
-// const twoDaysAgo = Date.now() - (2 * 24 * 60 * 60 * 1000);
-
-// const q = query(
-//   messagesRef,
-//   where("time", ">", twoDaysAgo),  // 🔥 FILTER
-//   orderBy("time")
-// );
-
-// onSnapshot(q, snap => {
-//   const box = document.getElementById("messages");
-//   const shouldScroll = isAtBottom(box);
-//   box.innerHTML = "";
-
-//   const docs = snap.docs;
-//   let unseenRefs = [];
-//   let lastMyMsgIndex = -1;
-
-//   docs.forEach((d, i) => {
-//     if (d.data().sender === username) lastMyMsgIndex = i;
-//   });
-
-//   docs.forEach((d, i) => {
-//     const m = d.data();
-//     const isMe = m.sender === username;
-
-//     if (!isMe && !m.seen) unseenRefs.push(d.ref);
-
-//     const time = new Date(m.time).toLocaleTimeString([], {
-//       hour: "2-digit",
-//       minute: "2-digit"
-//     });
-
-//     const replyHTML = m.replyTo
-//       ? `<div class="reply-preview"><b>${m.replyTo.sender}</b>: ${m.replyTo.text}</div>`
-//       : "";
-
-//     const reactions = m.reactions || {};
-//     let reactionsHTML = "";
-//     Object.keys(reactions).forEach(emoji => {
-//       reactionsHTML += `
-//         <span class="reaction"
-//           onclick="toggleReaction('${d.id}','${emoji}')">
-//           ${emoji} ${reactions[emoji].length}
-//         </span>`;
-//     });
-
-//     box.innerHTML += `
-//       <div class="msg-row ${isMe ? "me-row" : "other-row"}">
-//         <div class="bubble ${isMe ? "me" : "other"}">${replyHTML}${m.text}</div>
-//         <div class="time-text">${time}</div>
-//         ${
-//           isMe && i === lastMyMsgIndex && m.seen
-//             ? `<div class="seen-text">Seen</div>`
-//             : ``
-//         }
-//         ${reactionsHTML ? `<div class="reactions">${reactionsHTML}</div>` : ``}
-//       </div>
-//     `;
-//   });
-
-//   unseenRefs.forEach(ref => updateDoc(ref, { seen: true }));
-
-//   if (shouldScroll) {
-//     box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
-//   }
-// });
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  setDoc,
-  updateDoc,
-  getDoc,
-  where   // ✅ added for filtering
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+getFirestore,
+
+collection,
+
+addDoc,
+
+query,
+
+orderBy,
+
+onSnapshot,
+
+doc,
+
+setDoc,
+
+updateDoc,
+
+getDoc
+
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* ================= FIREBASE ================= */
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyDtmTgb_1K7bm5bf8NyLvx68Eh_CGM_jKE",
-  authDomain: "webchat-1bfe4.firebaseapp.com",
-  projectId: "webchat-1bfe4",
-  storageBucket: "webchat-1bfe4.firebasestorage.app",
-  messagingSenderId: "262087743590",
-  appId: "1:262087743590:web:53934198aca60e81acf5a7"
+apiKey: "AIzaSyDtmTgb_1K7bm5bf8NyLvx68Eh_CGM_jKE",
+
+authDomain: "webchat-1bfe4.firebaseapp.com",
+
+projectId: "webchat-1bfe4",
+
+storageBucket: "webchat-1bfe4.firebasestorage.app",
+
+messagingSenderId: "262087743590",
+
+appId: "1:262087743590:web:53934198aca60e81acf5a7"
 
 };
 
@@ -283,31 +46,31 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-
 /* ================= USER ================= */
 
 let username = localStorage.getItem("username");
 
-if (!username)
-  location.href = "index.html";
+if (!username) location.href = "index.html";
 
+/* 🔒 EXACT usernames only */
 
 const otherKey = username === "pratham" ? "Adhya" : "pratham";
 
 const otherUser = otherKey;
 
+/* header name */
 
 document.getElementById("chat-name").textContent = otherUser;
 
+/* logout */
 
 window.logout = () => {
 
-  localStorage.removeItem("username");
+localStorage.removeItem("username");
 
-  location.href = "index.html";
+location.href = "index.html";
 
 };
-
 
 /* ================= REFS ================= */
 
@@ -315,651 +78,488 @@ const messagesRef = collection(db, "messages");
 
 const typingRef = doc(db, "typing", "status");
 
-
-/* ✅ PERFORMANCE FILTER (ONLY LAST 2 DAYS) */
-
-const twoDaysAgo = Date.now() - (2 * 24 * 60 * 60 * 1000);
-
-
-const q = query(
-
-  messagesRef,
-
-  where("time", ">=", twoDaysAgo), // ✅ filter
-
-  orderBy("time")
-
-);
-
-
-/* ================= REPLY ================= */
+/* ================= REPLY STATE ================= */
 
 let replyData = null;
 
-
 window.clearReply = () => {
 
-  replyData = null;
+replyData = null;
 
-  document.getElementById("reply-box").classList.add("hidden");
+document.getElementById("reply-box").classList.add("hidden");
 
 };
-
 
 window.startReply = (sender, text) => {
 
-  replyData = { sender, text };
+replyData = { sender, text };
 
-  document.getElementById("reply-text").textContent =
-    `${sender}: ${text}`;
+document.getElementById("reply-text").textContent =
 
-  document.getElementById("reply-box").classList.remove("hidden");
+`${sender}: ${text}`;
+
+document.getElementById("reply-box").classList.remove("hidden");
 
 };
-
 
 /* ================= SEND MESSAGE ================= */
 
 window.sendMessage = async () => {
 
-  const input = document.getElementById("msg");
+const input = document.getElementById("msg");
 
-  const text = input.value.trim();
+const text = input.value.trim();
 
-  if (!text) return;
+if (!text) return;
 
+await addDoc(messagesRef, {
 
-  await addDoc(messagesRef, {
+sender: username,
 
-    sender: username,
-    text,
-    time: Date.now(),
-    seen: false,
-    reactions: {},
-    replyTo: replyData
+text,
 
-  });
+time: Date.now(),
 
+seen: false,
 
-  await setDoc(
+reactions: {},
 
-    typingRef,
-    { [username]: false },
-    { merge: true }
-
-  );
-
-
-  clearReply();
-
-  input.value = "";
-
-};
-
-
-document.getElementById("msg")
-.addEventListener("keydown", e => {
-
-  if (e.key === "Enter")
-    sendMessage();
+replyTo: replyData
 
 });
 
+await setDoc(typingRef, { [username]: false }, { merge: true });
+
+clearReply();
+
+input.value = "";
+
+};
+
+document.getElementById("msg").addEventListener("keydown", e => {
+
+if (e.key === "Enter") sendMessage();
+
+});
 
 /* ================= TYPING ================= */
 
 let typingTimeout;
 
+document.getElementById("msg").addEventListener("input", () => {
 
-document.getElementById("msg")
-.addEventListener("input", () => {
+setDoc(typingRef, { [username]: true }, { merge: true });
 
-  setDoc(
-    typingRef,
-    { [username]: true },
-    { merge: true }
-  );
+clearTimeout(typingTimeout);
 
-  clearTimeout(typingTimeout);
+typingTimeout = setTimeout(() => {
 
-  typingTimeout = setTimeout(() => {
+setDoc(typingRef, { [username]: false }, { merge: true });
 
-    setDoc(
-      typingRef,
-      { [username]: false },
-      { merge: true }
-    );
-
-  }, 800);
+}, 800);
 
 });
-
 
 onSnapshot(typingRef, snap => {
 
-  if (!snap.exists()) return;
+if (!snap.exists()) return;
 
-  document.getElementById("typing").textContent =
+document.getElementById("typing").textContent =
 
-    snap.data()[otherKey]
-      ? "typing…"
-      : "";
+snap.data()[otherKey] ? "typing…" : "";
 
 });
-
 
 /* ================= ONLINE / LAST SEEN ================= */
 
 const presenceRef = doc(db, "presence", username);
 
+/* online on load */
 
-setDoc(
+setDoc(presenceRef, {
 
-  presenceRef,
+online: true,
 
-  {
-    online: true,
-    lastSeen: Date.now()
-  },
+lastSeen: Date.now()
 
-  { merge: true }
+}, { merge: true });
 
-);
+/* reliable online/offline */
 
+document.addEventListener("visibilitychange", () => {
 
-document.addEventListener(
-"visibilitychange", () => {
+if (document.visibilityState === "hidden") {
 
-  if (document.visibilityState === "hidden") {
+setDoc(presenceRef, {
 
-    setDoc(
-      presenceRef,
-      {
-        online: false,
-        lastSeen: Date.now()
-      },
-      { merge: true }
-    );
+  online: false,
 
-  }
-  else {
+  lastSeen: Date.now()
 
-    setDoc(
-      presenceRef,
-      {
-        online: true,
-        lastSeen: Date.now()
-      },
-      { merge: true }
-    );
+}, { merge: true });
 
-  }
+} else {
+
+setDoc(presenceRef, {
+
+  online: true,
+
+  lastSeen: Date.now()
+
+}, { merge: true });
+
+}
 
 });
 
+/* read other user presence */
 
-const otherPresenceRef =
-doc(db, "presence", otherKey);
-
+const otherPresenceRef = doc(db, "presence", otherKey);
 
 onSnapshot(otherPresenceRef, snap => {
 
-  if (!snap.exists()) return;
+if (!snap.exists()) return;
 
+const data = snap.data();
 
-  const data = snap.data();
+const el = document.getElementById("user-status");
 
-  const el =
-  document.getElementById("user-status");
+if (data.online) {
 
+el.textContent = "Online";
 
-  if (data.online) {
+el.className = "status-text status-online";
 
-    el.textContent = "Online";
+} else {
 
-    el.className =
-      "status-text status-online";
+const t = new Date(data.lastSeen).toLocaleTimeString([], {
 
-  }
-  else {
+  hour: "2-digit",
 
-    const t =
-    new Date(data.lastSeen)
-    .toLocaleTimeString([], {
-
-      hour: "2-digit",
-      minute: "2-digit"
-
-    });
-
-    el.textContent =
-      `Last seen ${t}`;
-
-    el.className =
-      "status-text";
-
-  }
+  minute: "2-digit"
 
 });
 
+el.textContent = `Last seen ${t}`;
+
+el.className = "status-text";
+
+}
+
+});
 
 /* ================= REACTIONS ================= */
 
-window.toggleReaction =
-async (msgId, emoji) => {
+window.toggleReaction = async (msgId, emoji) => {
 
-  const msgRef =
-  doc(db, "messages", msgId);
+const msgRef = doc(db, "messages", msgId);
 
-  const snap =
-  await getDoc(msgRef);
+const snap = await getDoc(msgRef);
 
-  if (!snap.exists()) return;
+if (!snap.exists()) return;
 
+const data = snap.data();
 
-  const data = snap.data();
+const reactions = data.reactions || {};
 
-  const reactions =
-  data.reactions || {};
+const users = reactions[emoji] || [];
 
-  const users =
-  reactions[emoji] || [];
+if (users.includes(username)) {
 
+reactions[emoji] = users.filter(u => u !== username);
 
-  if (users.includes(username)) {
+if (reactions[emoji].length === 0) delete reactions[emoji];
 
-    reactions[emoji] =
-    users.filter(
-      u => u !== username
-    );
+} else {
 
-    if (reactions[emoji].length === 0)
-      delete reactions[emoji];
+reactions[emoji] = [...users, username];
 
-  }
-  else {
+}
 
-    reactions[emoji] =
-    [...users, username];
-
-  }
-
-
-  await updateDoc(
-    msgRef,
-    { reactions }
-  );
+await updateDoc(msgRef, { reactions });
 
 };
-
-
-/* ================= REACTION PICKER ================= */
 
 window.openReactionPicker = (msgId) => {
 
-  document
-  .querySelectorAll(".reaction-picker")
-  .forEach(p => p.remove());
+document.querySelectorAll(".reaction-picker").forEach(p => p.remove());
 
+const picker = document.createElement("div");
 
-  const picker =
-  document.createElement("div");
+picker.className = "reaction-picker";
 
-  picker.className =
-  "reaction-picker";
+picker.innerHTML = "❤️ 😂 😮 😢 👍";
 
+picker.innerHTML.split(" ").forEach(emoji => {
 
-  const emojis =
-  ["❤️","😂","😮","😢","👍"];
+const span = document.createElement("span");
 
+span.textContent = emoji;
 
-  emojis.forEach(emoji => {
+span.onclick = () => {
 
-    const span =
-    document.createElement("span");
+  toggleReaction(msgId, emoji);
 
-    span.textContent = emoji;
-
-    span.onclick = () => {
-
-      toggleReaction(msgId, emoji);
-
-      picker.remove();
-
-    };
-
-    picker.appendChild(span);
-
-  });
-
-
-  document.body.appendChild(picker);
-
-
-  setTimeout(
-    () => picker.remove(),
-    3000
-  );
+  picker.remove();
 
 };
 
+picker.appendChild(span);
 
-/* ================= MENU ================= */
+});
+
+document.body.appendChild(picker);
+
+setTimeout(() => picker.remove(), 3000);
+
+};
+
+/* ================= THREE DOTS MENU ================= */
 
 function closeMsgMenus() {
 
-  document
-  .querySelectorAll(".msg-menu")
-  .forEach(m => m.remove());
+document.querySelectorAll(".msg-menu").forEach(m => m.remove());
 
 }
-
 
 window.copyMessage = text => {
 
-  navigator.clipboard.writeText(text);
+navigator.clipboard.writeText(text);
 
-  closeMsgMenus();
-
-};
-
-
-window.openMsgMenu =
-(event, sender, text) => {
-
-  event.stopPropagation();
-
-  closeMsgMenus();
-
-
-  const menu =
-  document.createElement("div");
-
-  menu.className = "msg-menu";
-
-
-  menu.innerHTML = `
-
-    <div onclick="startReply('${sender}','${text.replace(/'/g,"\\'")}')">
-      Reply
-    </div>
-
-    <div onclick="copyMessage('${text.replace(/'/g,"\\'")}')">
-      Copy
-    </div>
-
-  `;
-
-
-  document.body.appendChild(menu);
-
-
-  const rect =
-  event.target.getBoundingClientRect();
-
-
-  menu.style.top =
-  rect.bottom +
-  window.scrollY + "px";
-
-
-  menu.style.left =
-  rect.left +
-  window.scrollX - 60 + "px";
+closeMsgMenus();
 
 };
 
+window.openMsgMenu = (event, sender, text) => {
 
-document.addEventListener(
-"click",
-closeMsgMenus
-);
+event.stopPropagation();
 
+closeMsgMenus();
 
-/* ================= SWIPE REPLY ================= */
+const menu = document.createElement("div");
+
+menu.className = "msg-menu";
+
+menu.innerHTML = `
+
+<div onclick="startReply('${sender}','${text.replace(/'/g,"\\'")}')">Reply</div>
+
+<div onclick="copyMessage('${text.replace(/'/g,"\\'")}')">Copy</div>
+
+`;
+
+document.body.appendChild(menu);
+
+const rect = event.target.getBoundingClientRect();
+
+menu.style.top = rect.bottom + window.scrollY + "px";
+
+menu.style.left = rect.left + window.scrollX - 60 + "px";
+
+};
+
+document.addEventListener("click", closeMsgMenus);
+
+/* ================= MOBILE SWIPE TO REPLY ================= */
 
 let touchStartX = 0;
 
-
 window.handleTouchStart = e => {
 
-  touchStartX =
-  e.touches[0].clientX;
+touchStartX = e.touches[0].clientX;
 
 };
 
+window.handleTouchEnd = (e, sender, text) => {
 
-window.handleTouchEnd =
-(e, sender, text) => {
+const dx = e.changedTouches[0].clientX - touchStartX;
 
-  const dx =
-  e.changedTouches[0].clientX -
-  touchStartX;
-
-  if (dx > 80)
-    startReply(sender, text);
+if (dx > 80) startReply(sender, text);
 
 };
 
-
-/* ================= SCROLL ================= */
+/* ================= SMART AUTO-SCROLL ================= */
 
 function isAtBottom(el) {
 
-  return el.scrollHeight
-       - el.scrollTop
-       - el.clientHeight < 60;
+return el.scrollHeight - el.scrollTop - el.clientHeight < 60;
 
 }
 
+/* ================= MESSAGES + SEEN ================= */
 
-/* ================= LOAD MESSAGES ================= */
+const q = query(messagesRef, orderBy("time"));
 
 onSnapshot(q, snap => {
 
-  const box =
-  document.getElementById("messages");
+const box = document.getElementById("messages");
 
+const shouldScroll = isAtBottom(box);
 
-  const shouldScroll =
-  isAtBottom(box);
+box.innerHTML = "";
 
+const docs = snap.docs;
 
-  box.innerHTML = "";
+let unseenRefs = [];
 
+let lastMyMsgIndex = -1;
 
-  const docs = snap.docs;
+docs.forEach((d, i) => {
 
+if (d.data().sender === username) lastMyMsgIndex = i;
 
-  let unseenRefs = [];
+});
 
-  let lastMyMsgIndex = -1;
+docs.forEach((d, i) => {
 
+const m = d.data();
 
-  docs.forEach((d, i) => {
+const isMe = m.sender === username;
 
-    if (d.data().sender === username)
-      lastMyMsgIndex = i;
 
-  });
 
+if (!isMe && !m.seen) unseenRefs.push(d.ref);
 
-  docs.forEach((d, i) => {
 
-    const m = d.data();
 
-    const isMe =
-    m.sender === username;
+const time = new Date(m.time).toLocaleTimeString([], {
 
+  hour: "2-digit",
 
-    if (!isMe && !m.seen)
-      unseenRefs.push(d.ref);
-
-
-    const time =
-    new Date(m.time)
-    .toLocaleTimeString([], {
-
-      hour: "2-digit",
-      minute: "2-digit"
-
-    });
-
-
-    const replyHTML =
-    m.replyTo
-    ? `<div class="reply-preview">
-        <b>${m.replyTo.sender}</b>:
-        ${m.replyTo.text}
-      </div>`
-    : "";
-
-
-    const reactions =
-    m.reactions || {};
-
-
-    let reactionsHTML = "";
-
-
-    Object.keys(reactions)
-    .forEach(emoji => {
-
-      reactionsHTML += `
-        <span class="reaction"
-        onclick="toggleReaction('${d.id}','${emoji}')">
-
-        ${emoji}
-        ${reactions[emoji].length}
-
-        </span>
-      `;
-
-    });
-
-
-    box.innerHTML += `
-
-      <div class="msg-row ${isMe ? "me-row" : "other-row"}">
-
-        <div class="msg-top">
-
-          <span class="msg-dots"
-          onclick="openMsgMenu(event,'${m.sender}','${m.text.replace(/'/g,"\\'")}')">
-
-          ⋮
-
-          </span>
-
-        </div>
-
-        <div class="bubble ${isMe ? "me" : "other"}"
-
-        onclick="openReactionPicker('${d.id}')"
-
-        ontouchstart="handleTouchStart(event)"
-
-        ontouchend="handleTouchEnd(event,'${m.sender}','${m.text.replace(/'/g,"\\'")}')">
-
-          ${replyHTML}
-
-          ${m.text}
-
-        </div>
-
-        <div class="time-text">
-
-          ${time}
-
-        </div>
-
-        ${
-          isMe &&
-          i === lastMyMsgIndex &&
-          m.seen
-
-          ? `<div class="seen-text">Seen</div>`
-          : ""
-        }
-
-        ${
-          reactionsHTML
-          ? `<div class="reactions">${reactionsHTML}</div>`
-          : ""
-        }
-
-      </div>
-
-    `;
-
-  });
-
-
-  unseenRefs.forEach(ref =>
-    updateDoc(ref, { seen: true })
-  );
-
-
-  if (shouldScroll) {
-
-    box.scrollTo({
-
-      top: box.scrollHeight,
-
-      behavior: "smooth"
-
-    });
-
-  }
+  minute: "2-digit"
 
 });
 
 
-/* ================= EMOJI PICKER ================= */
 
-const emojiBtn =
-document.getElementById("emoji-btn");
+const replyHTML = m.replyTo
 
-const emojiPicker =
-document.getElementById("emoji-picker");
+  ? `<div class="reply-preview"><b>${m.replyTo.sender}</b>: ${m.replyTo.text}</div>`
 
-const msgInput =
-document.getElementById("msg");
+  : "";
 
 
-emojiBtn.addEventListener(
-"click", e => {
 
-  e.stopPropagation();
+const reactions = m.reactions || {};
 
-  emojiPicker
-  .classList.toggle("hidden");
+let reactionsHTML = "";
 
-});
+Object.keys(reactions).forEach(emoji => {
 
+  reactionsHTML += `
 
-emojiPicker
-.querySelectorAll("span")
-.forEach(span => {
+    <span class="reaction"
 
-  span.addEventListener(
-  "click", () => {
+      onclick="toggleReaction('${d.id}','${emoji}')">
 
-    msgInput.value +=
-    span.textContent;
+      ${emoji} ${reactions[emoji].length}
 
-    emojiPicker
-    .classList.add("hidden");
-
-    msgInput.focus();
-
-  });
+    </span>`;
 
 });
 
 
-document.addEventListener(
-"click",
-() => emojiPicker.classList.add("hidden")
-);
 
+box.innerHTML += `
+
+  <div class="msg-row ${isMe ? "me-row" : "other-row"}">
+
+    <div class="msg-top">
+
+      <span class="msg-dots"
+
+        onclick="openMsgMenu(event,'${m.sender}','${m.text.replace(/'/g,"\\'")}')">⋮</span>
+
+    </div>
+
+
+
+    <div class="bubble ${isMe ? "me" : "other"}"
+
+      onclick="openReactionPicker('${d.id}')"
+
+      ontouchstart="handleTouchStart(event)"
+
+      ontouchend="handleTouchEnd(event,'${m.sender}','${m.text.replace(/'/g,"\\'")}')">
+
+      ${replyHTML}
+
+      ${m.text}
+
+    </div>
+
+
+
+    <div class="time-text">${time}</div>
+
+
+
+    ${
+
+      isMe && i === lastMyMsgIndex && m.seen
+
+        ? `<div class="seen-text">Seen</div>`
+
+        : ``
+
+    }
+
+
+
+    ${reactionsHTML ? `<div class="reactions">${reactionsHTML}</div>` : ``}
+
+  </div>
+
+`;
+
+});
+
+unseenRefs.forEach(ref => updateDoc(ref, { seen: true }));
+
+if (shouldScroll) {
+
+box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+
+}
+
+});
+
+const emojiBtn = document.getElementById("emoji-btn");
+
+const emojiPicker = document.getElementById("emoji-picker");
+
+const msgInput = document.getElementById("msg");
+
+/* toggle picker */
+
+emojiBtn.addEventListener("click", e => {
+
+e.stopPropagation();
+
+emojiPicker.classList.toggle("hidden");
+
+});
+
+/* emoji insert */
+
+emojiPicker.querySelectorAll("span").forEach(span => {
+
+span.addEventListener("click", () => {
+
+msgInput.value += span.textContent;
+
+emojiPicker.classList.add("hidden");
+
+msgInput.focus();
+
+});
+
+});
+
+/* close on outside click */
+
+document.addEventListener("click", () => {
+
+emojiPicker.classList.add("hidden");
+
+});
