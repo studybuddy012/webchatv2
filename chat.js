@@ -68,6 +68,35 @@ collection(db, "messages");
 const typingRef =
 doc(db, "typing", "status");
 
+/*==================export chat system==================*/ 
+window.exportChat = async () => {
+
+  const snap = await getDocs(q);
+
+  let text = "";
+
+  snap.forEach(doc => {
+
+    const m = doc.data();
+
+    const time = new Date(m.time)
+      .toLocaleString();
+
+    text += `[${time}] ${m.sender}: ${m.text}\n`;
+
+  });
+
+  const blob = new Blob([text], { type: "text/plain" });
+
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+
+  a.download = "chat.txt";
+
+  a.click();
+
+};
 
 /* ================= ONLY LAST 2 DAYS ================= */
 
@@ -424,3 +453,4 @@ snap => {
     });
 
 });
+
