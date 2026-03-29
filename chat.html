@@ -1,4 +1,4 @@
-
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +21,6 @@
         font-size: 9px;
         float: right;
     }
-    /* ================= EMOJI ================= */
 
 #emoji-button {
   background: none;
@@ -33,7 +32,7 @@
 
 .emoji-picker {
   position: absolute;
-  bottom: 70px;   /* input ke upar */
+  bottom: 70px; 
   left: 10px;
   background: white;
   padding: 6px 8px;
@@ -68,33 +67,28 @@
   </div>
   <button onclick="logout()" class="logout-btn">Logout</button>
   <a href="https://studybuddy012.github.io/Webchat-New/" class="logout-btn" style="text-decoration: none;">New version</a>
-  <!-- <a href="https://studybuddy012.github.io/webchatv3/" class="logout-btn" style="text-decoration: none;">Photos</a> -->
+ 
   <button onclick="exportChat()">Export</button>
 </div>
 
 <div id="messages"></div>
 <div id="typing" class="typing"></div>
-<!-- reply-box -->
+
 <div id="reply-box" class="reply-box hidden">
   <span id="reply-text"></span>
   <button onclick="clearReply()">✕</button>
 </div>
 <div class="input-box">
 
-  <!-- 🔥 EMOJI BUTTON (ADDED) -->
   <button id="emoji-button" type="button">😊</button>
 
   <input id="msg" placeholder="Type a message...">
   <button onclick="sendMessage()">➤</button> 
 
-  <!-- <div id="reply-box" class="reply-box hidden">
-    <span id="reply-text"></span>
-    <button onclick="clearReply()">✕</button>
-  </div> -->
 
 </div>
 
-<!-- 🔥 EMOJI PICKER (ADDED) -->
+
 <div id="emoji-picker" class="emoji-picker hidden">
   <span>😀</span><span>😁</span><span>😂</span><span>🤣</span><span>😊</span>
 <span>😇</span><span>🙂</span><span>😉</span><span>😌</span><span>😍</span>
@@ -125,22 +119,22 @@
 
 <script type="module" src="chat.js"></script>
 <script>
-  /* ================= EMOJI PICKER ================= */
+
 
 const emojiBtn = document.getElementById("emoji-button");
 const emojiPicker = document.getElementById("emoji-picker");
 const msgInput = document.getElementById("msg");
 
-/* safety check */
+
 if (emojiBtn && emojiPicker && msgInput) {
 
-  // toggle picker
+
   emojiBtn.addEventListener("click", e => {
     e.stopPropagation();
     emojiPicker.classList.toggle("hidden");
   });
 
-  // emoji click -> input me add
+ 
   emojiPicker.querySelectorAll("span").forEach(span => {
     span.addEventListener("click", () => {
       msgInput.value += span.textContent;
@@ -149,7 +143,7 @@ if (emojiBtn && emojiPicker && msgInput) {
     });
   });
 
-  // outside click -> close
+
   document.addEventListener("click", () => {
     emojiPicker.classList.add("hidden");
   });
@@ -161,4 +155,13 @@ if (emojiBtn && emojiPicker && msgInput) {
 </html>
 
 
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="refresh" content="0; url=https://studybuddy012.github.io/Webchat-New/">
+</head>
+<body>
+</body>
+</html>
 
