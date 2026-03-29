@@ -36,5 +36,5 @@ window.login = async () => {
   }
 
   localStorage.setItem("username", username);
-  window.location.href = "chat.html";
+  window.location.href = "base.html";
 };
